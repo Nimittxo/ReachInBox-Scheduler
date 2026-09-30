@@ -1,0 +1,48 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "worker": "tsx src/worker.ts",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@bull-board/api": "^9.10.2",
+    "@bull-board/express": "^9.10.2",
+    "@elastic/elasticsearch": "^8.15.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "@slack/oauth": "^4.0.0",
+    "@slack/web-api": "^8.1.1",
+    "bullmq": "^6.3.10",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "google-auth-library": "^11.1.0",
+    "ioredis": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^10.0.13",
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.3",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3"
+  }
+}

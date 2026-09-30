@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum SenderStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum BatchStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  PARTIALLY_FAILED
+  FAILED
+}
+
+enum EmailStatus {
+  SCHEDULED
+  QUEUED
+  PROCESSING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+model User {
+  id          String   @id @default(uuid())
+  googleId    String   @unique
+  email       String   @unique
+  name        String
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships WorkspaceMember[]
+  batches     EmailBatch[]
+  emails      ScheduledEmail[] @relation("EmailCreatedBy")
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships     WorkspaceMember[]
+  senders         SenderAccount[]
+  batches         EmailBatch[]
+  emails          ScheduledEmail[]
+  slackConnection SlackConnection?
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model SenderAccount {
+  id           String       @id @default(uuid())
+  workspaceId  String
+  email        String
+  displayName  String?
+  smtpHost     String
+  smtpPort     Int
+  smtpUser     String
+  smtpPassword String
+  status       SenderStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  emails    ScheduledEmail[]
+
+  @@unique([workspaceId, email])
+  @@index([workspaceId, status])
+}
+
+model EmailBatch {
+  id          String      @id @default(uuid())
+  workspaceId String
+  createdById String
+  name        String?
+  subject     String
+  body        String
+  startAt     DateTime
+  delayMs     Int
+  hourlyLimit Int
+  status      BatchStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User             @relation(fields: [createdById], references: [id])
+  emails    ScheduledEmail[]
+
+  @@index([workspaceId, status])
+  @@index([createdById])
+}
+
+model ScheduledEmail {
+  id             String      @id @default(uuid())
+  workspaceId    String
+  batchId        String
+  createdById    String
+  senderId       String
+
+  recipientEmail String
+  recipientName  String?
+  subject        String
+  body           String
+
+  scheduledAt DateTime
+  status      EmailStatus @default(SCHEDULED)
+
+  idempotencyKey String  @unique
+  queueJobId     String? @unique
+
+  attempts  Int       @default(0)
+  lastError String?
+  sentAt    DateTime?
+  failedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  batch     EmailBatch   @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  createdBy User         @relation("EmailCreatedBy", fields: [createdById], references: [id])
+  sender    SenderAccount @relation(fields: [senderId], references: [id])
+
+  @@index([workspaceId, status, scheduledAt])
+  @@index([workspaceId, recipientEmail])
+  @@index([batchId])
+  @@index([senderId, status])
+}
+
+model SlackConnection {
+  id           String   @id @default(uuid())
+  workspaceId  String   @unique
+  slackTeamId  String
+  slackTeamName String?
+  botUserId    String?
+  accessToken  String
+  channelId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  aggregateId String
+  payload     Json
+
+  attempts  Int       @default(0)
+  lastError String?
+  processedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([processedAt, createdAt])
+  @@index([aggregateId])
+}

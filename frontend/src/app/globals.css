@@ -1,0 +1,2351 @@
+/* ============================================================
+   ReachBox — Outlook-style dark glass theme
+   Tune the look from the tokens below; nothing else needs !important.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* type */
+  --font: "Segoe UI Variable Text", "Segoe UI", Inter, ui-sans-serif,
+    system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* text */
+  --text: #f5f7fa;
+  --text-2: #c5cedb;
+  --text-3: #8f9cb0;
+
+  /* accent (Outlook blue) */
+  --accent: #1b78d8;
+  --accent-hover: #3390ee;
+  --accent-text: #6cb8ff;
+
+  /* glass — lower alpha = more wallpaper shows through */
+  --panel: rgba(16, 22, 34, 0.56);
+  --panel-solid: rgba(20, 27, 40, 0.94);
+  --blur: blur(26px) saturate(140%);
+  --stroke: rgba(255, 255, 255, 0.10);
+  --hover: rgba(255, 255, 255, 0.07);
+  --selected: rgba(43, 136, 216, 0.28);
+  --field: rgba(255, 255, 255, 0.06);
+
+  /* how much the wallpaper is darkened so white text stays readable */
+  --wallpaper-dim: 0.32;
+
+  /* icons in /public/icons are dark strokes; this turns them white.
+     Set to "none" if you switch to white icons. */
+  --icon-filter: brightness(0) invert(1);
+
+  --radius: 8px;
+
+  /* status colours */
+  --ok: #67d9a2;
+  --info: #7db8ff;
+  --violet: #b5a9ff;
+  --warn: #f2c766;
+  --bad: #ff8f94;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #0d1522;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* ---------- wallpaper + shell ---------- */
+
+.reachbox-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background: url("/images/workspace-bg.jpg") center / cover no-repeat;
+}
+
+.desktop-wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 11, 22, var(--wallpaper-dim));
+}
+
+.reachbox-window {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* every floating pane shares one glass recipe */
+.ribbon,
+.folder-sidebar,
+.message-list,
+.reading-pane {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.22);
+}
+
+/* white icons on dark glass */
+.app-rail img,
+.folder-item img,
+.ribbon img,
+.top-actions img,
+.search-container img,
+.upload-button img,
+.empty-icon img {
+  filter: var(--icon-filter);
+  object-fit: contain;
+}
+
+/* ---------- title bar ---------- */
+
+.titlebar {
+  display: flex;
+  height: 52px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 18px;
+  padding: 0 14px 0 16px;
+}
+
+.titlebar-brand {
+  display: flex;
+  width: 200px;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.brand-mark img {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+}
+
+.brand-mark span {
+  display: none;
+}
+
+.brand-fallback span {
+  display: block;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.search-container {
+  display: flex;
+  height: 34px;
+  width: min(460px, 40vw);
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: rgba(10, 16, 27, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 0 10px;
+}
+
+.search-container:focus-within {
+  border-color: var(--accent-text);
+  background: rgba(10, 16, 27, 0.78);
+}
+
+.search-container img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.search-container input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 14px;
+}
+
+.search-container input::placeholder {
+  color: var(--text-3);
+}
+
+.search-shortcut {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--stroke);
+  border-radius: 4px;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.toolbar-button,
+.notification-button {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.toolbar-button:hover,
+.notification-button:hover {
+  background: var(--hover);
+}
+
+.toolbar-button img,
+.notification-button img {
+  width: 18px;
+  height: 18px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(103, 217, 162, 0.35);
+  border-radius: 999px;
+  background: rgba(103, 217, 162, 0.12);
+  padding: 4px 11px;
+  color: var(--ok);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+}
+
+.top-avatar,
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82d6, #6c5ce7);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.top-avatar {
+  width: 32px;
+  height: 32px;
+  margin-left: 4px;
+}
+
+/* ---------- body: rail + main ---------- */
+
+.app-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+
+.app-rail {
+  display: flex;
+  width: 56px;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0 12px;
+}
+
+.rail-actions {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rail-button {
+  position: relative;
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.rail-button img {
+  width: 22px;
+  height: 22px;
+  opacity: 0.8;
+}
+
+.rail-button:hover {
+  background: var(--hover);
+}
+
+.rail-button:hover img,
+.rail-active img {
+  opacity: 1;
+}
+
+.rail-active {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.rail-active::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 11px;
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--accent-text);
+}
+
+.app-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 8px 0;
+}
+
+/* ---------- ribbon ---------- */
+
+.ribbon {
+  display: flex;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.ribbon-primary,
+.ribbon-button {
+  display: flex;
+  height: 32px;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 5px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.ribbon-primary {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+}
+
+.ribbon-primary:hover {
+  background: var(--accent-hover);
+}
+
+.ribbon-button {
+  background: transparent;
+  color: var(--text-2);
+}
+
+.ribbon-button:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.ribbon img {
+  width: 17px;
+  height: 17px;
+}
+
+.ribbon-divider {
+  width: 1px;
+  height: 22px;
+  margin: 0 6px;
+  background: var(--stroke);
+}
+
+/* ---------- three panes ---------- */
+
+.app-panels {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  gap: 8px;
+}
+
+/* folder pane */
+
+.folder-sidebar {
+  display: flex;
+  width: 250px;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 10px 8px 8px;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.account-row::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin: 0 2px 3px 0;
+  border-right: 1.5px solid var(--text-2);
+  border-bottom: 1.5px solid var(--text-2);
+  transform: rotate(45deg);
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.folder-item {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0 12px;
+  color: var(--text);
+  font-size: 14px;
+  text-align: left;
+}
+
+.folder-item img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+
+.folder-item:hover {
+  background: var(--hover);
+}
+
+.folder-selected {
+  background: rgba(255, 255, 255, 0.11);
+  font-weight: 600;
+}
+
+.folder-count,
+.failed-count {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.folder-count {
+  color: var(--accent-text);
+}
+
+.failed-count {
+  color: var(--bad);
+}
+
+.folder-muted-count {
+  margin-left: auto;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.sidebar-spacer {
+  flex: 1;
+}
+
+.scheduler-card {
+  margin: 8px 4px 4px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+}
+
+.scheduler-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.scheduler-card-text {
+  margin-top: 4px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.scheduler-card-metrics {
+  display: flex;
+  gap: 26px;
+  margin-top: 10px;
+  border-top: 1px solid var(--stroke);
+  padding-top: 9px;
+}
+
+.scheduler-card-metrics div {
+  display: flex;
+  flex-direction: column;
+}
+
+.scheduler-card-metrics strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.scheduler-card-metrics span {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* message list */
+
+.message-list {
+  display: flex;
+  width: clamp(340px, 30vw, 460px);
+  flex-shrink: 0;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.message-list-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  height: 46px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(16, 22, 34, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0 16px;
+}
+
+.message-list-header h1 {
+  position: relative;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.message-list-header h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-text);
+}
+
+.list-header-actions {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.message-row {
+  display: flex;
+  width: 100%;
+  min-height: 78px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
+  padding: 0 14px 0 13px;
+  text-align: left;
+}
+
+.message-row:hover {
+  background: var(--hover);
+}
+
+.message-selected,
+.message-selected:hover {
+  border-left-color: var(--accent-text);
+  background: var(--selected);
+}
+
+.sender-avatar {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sender-avatar.large {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+}
+
+.message-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.message-main-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.message-main-line strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-main-line time {
+  flex-shrink: 0;
+  color: var(--accent-text);
+  font-size: 12px;
+}
+
+.message-subject {
+  overflow: hidden;
+  margin-top: 2px;
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.message-meta > span:first-child {
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* status pills */
+
+.status-pill {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.status-sent {
+  background: rgba(103, 217, 162, 0.16);
+  color: var(--ok);
+}
+
+.status-queued {
+  background: rgba(125, 184, 255, 0.16);
+  color: var(--info);
+}
+
+.status-scheduled {
+  background: rgba(181, 169, 255, 0.16);
+  color: var(--violet);
+}
+
+.status-processing {
+  background: rgba(242, 199, 102, 0.16);
+  color: var(--warn);
+}
+
+.status-failed {
+  background: rgba(255, 143, 148, 0.16);
+  color: var(--bad);
+}
+
+.status-cancelled {
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--text-2);
+}
+
+/* empty / loading */
+
+.empty-mail {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.empty-icon {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty-icon img {
+  width: 26px;
+  height: 26px;
+  opacity: 0.85;
+}
+
+.empty-mail strong {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.empty-mail > span {
+  max-width: 280px;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.empty-action {
+  margin-top: 16px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--accent);
+  padding: 8px 16px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.empty-action:hover {
+  background: var(--accent-hover);
+}
+
+/* reading pane — only exists when an email is selected;
+   otherwise the wallpaper shows, just like Outlook */
+
+.reading-pane {
+  min-width: 0;
+  flex: 1;
+  overflow-y: auto;
+  background: rgba(16, 22, 34, 0.5);
+}
+
+.reading-toolbar {
+  display: flex;
+  height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--stroke);
+  padding: 0 18px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reading-close {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.reading-close:hover {
+  background: var(--hover);
+}
+
+.reading-content {
+  max-width: 760px;
+  padding: 26px 30px;
+}
+
+.reading-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reading-header > div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.reading-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.reading-header p {
+  margin: 4px 0 0;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.reading-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: var(--stroke);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detail-grid div {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 12px 14px;
+}
+
+.detail-grid span {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.detail-grid strong {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.delivery-card {
+  margin-top: 18px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.delivery-title {
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delivery-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.delivery-step > span {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.delivery-step.completed > span {
+  background: rgba(103, 217, 162, 0.18);
+  color: var(--ok);
+}
+
+.delivery-step > div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.delivery-step strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delivery-step small {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.delivery-step b {
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.delivery-step.completed b {
+  color: var(--ok);
+}
+
+.delivery-line {
+  width: 1px;
+  height: 14px;
+  margin: 3px 0 3px 11px;
+  background: var(--stroke);
+}
+
+.preview-placeholder {
+  margin-top: 18px;
+}
+
+.preview-placeholder-title {
+  margin-bottom: 8px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.preview-placeholder-box {
+  min-height: 130px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.preview-line {
+  width: 65%;
+  height: 7px;
+  margin-bottom: 9px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.preview-line.wide {
+  width: 82%;
+}
+
+.preview-line.short {
+  width: 38%;
+}
+
+.preview-space {
+  height: 18px;
+}
+
+/* ---------- compose window ---------- */
+
+.compose-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  background: rgba(3, 8, 16, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.compose-window {
+  display: flex;
+  width: min(720px, 100vw);
+  height: min(800px, 94vh);
+  flex-direction: column;
+  margin: 0 20px 20px 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: var(--panel-solid);
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+.compose-titlebar {
+  display: flex;
+  height: 50px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--stroke);
+  padding: 0 10px 0 18px;
+}
+
+.compose-titlebar > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.compose-titlebar strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.compose-titlebar span {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.compose-window-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 2px;
+}
+
+.compose-window-actions button {
+  width: 34px;
+  height: 30px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.compose-window-actions button:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.compose-form {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.compose-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 22px;
+}
+
+.compose-field {
+  margin-bottom: 16px;
+}
+
+.compose-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.compose-field > input,
+.recipient-input,
+.compose-message,
+.schedule-grid input {
+  border: 1px solid var(--stroke);
+  border-radius: 6px;
+  background: var(--field);
+  outline: none;
+  color: var(--text);
+}
+
+.compose-field > input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.compose-field > input:focus,
+.recipient-input:focus-within,
+.compose-message:focus,
+.schedule-grid input:focus {
+  border-color: var(--accent-text);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.recipient-input {
+  padding: 8px;
+}
+
+.recipient-input textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  border: 1px solid var(--stroke);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background: var(--hover);
+}
+
+.recipient-count {
+  margin-left: 10px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.compose-message {
+  display: block;
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.compose-message::placeholder,
+.recipient-input textarea::placeholder,
+.compose-field > input::placeholder {
+  color: var(--text-3);
+}
+
+.schedule-panel {
+  margin-top: 18px;
+  border: 1px solid rgba(108, 184, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(27, 120, 216, 0.10);
+  padding: 16px;
+}
+
+.schedule-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.schedule-heading div {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-heading strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.schedule-heading span {
+  margin-top: 2px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.schedule-heading .schedule-badge {
+  margin-top: 0;
+  border-radius: 4px;
+  background: rgba(108, 184, 255, 0.18);
+  padding: 3px 8px;
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 10px;
+}
+
+.schedule-grid label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.schedule-grid input {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit input {
+  min-width: 0;
+  border-radius: 6px 0 0 6px;
+}
+
+.input-with-unit span {
+  display: flex;
+  height: 38px;
+  align-items: center;
+  border: 1px solid var(--stroke);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0 9px;
+  color: var(--text-3);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.form-error,
+.form-success {
+  margin-top: 14px;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.form-error {
+  border: 1px solid rgba(255, 143, 148, 0.4);
+  background: rgba(255, 143, 148, 0.12);
+  color: var(--bad);
+}
+
+.form-success {
+  border: 1px solid rgba(103, 217, 162, 0.4);
+  background: rgba(103, 217, 162, 0.12);
+  color: var(--ok);
+}
+
+.compose-footer {
+  display: flex;
+  min-height: 60px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--stroke);
+  padding: 0 18px;
+}
+
+.compose-footer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.compose-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-button,
+.send-button {
+  height: 34px;
+  border: 0;
+  border-radius: 5px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cancel-button {
+  background: transparent;
+  color: var(--text-2);
+}
+
+.cancel-button:hover {
+  background: var(--hover);
+}
+
+.send-button {
+  background: var(--accent);
+  color: white;
+}
+
+.send-button:hover {
+  background: var(--accent-hover);
+}
+
+.send-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.asset-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+  .folder-sidebar {
+    width: 220px;
+  }
+
+  .titlebar-brand {
+    width: 150px;
+  }
+}
+
+@media (max-width: 900px) {
+  .reading-pane {
+    display: none;
+  }
+
+  .message-list {
+    width: auto;
+    flex: 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .app-rail,
+  .folder-sidebar,
+  .connection-status,
+  .brand-name {
+    display: none;
+  }
+
+  .titlebar-brand {
+    width: auto;
+  }
+
+  .app-main {
+    padding-left: 8px;
+  }
+
+  .search-container {
+    width: auto;
+    flex: 1;
+  }
+
+  .compose-window {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ============================================================
+   REACHBOX — FINAL GLASS / ICON CORRECTION
+   ============================================================ */
+
+:root {
+  /* More opaque glass — wallpaper remains visible, but UI stays solid */
+  --panel: rgba(255, 255, 255, 0.86);
+  --panel-solid: rgba(255, 255, 255, 0.96);
+
+  /* Light professional text */
+  --text: #172033;
+  --text-2: #4d5a6d;
+  --text-3: #7b8798;
+
+  /* ReachBox / Outlook-style blue */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-text: #2563eb;
+
+  /* Very subtle borders */
+  --stroke: rgba(15, 23, 42, 0.10);
+
+  /* Light hover */
+  --hover: rgba(15, 23, 42, 0.055);
+
+  /* Selected folder */
+  --selected: rgba(37, 99, 235, 0.12);
+
+  /* Inputs */
+  --field: rgba(255, 255, 255, 0.78);
+
+  /* Keep wallpaper visible around the application */
+  --wallpaper-dim: 0.10;
+
+  /*
+     IMPORTANT:
+     Your SVGs are dark/light native assets.
+     Do NOT invert them.
+  */
+  --icon-filter: none;
+}
+
+/* ============================================================
+   REAL SVG ICONS
+   ============================================================ */
+
+/*
+   AssetIcon renders actual files from /public/icons.
+   Do not turn these into text glyphs.
+*/
+
+.app-rail img,
+.folder-item img,
+.ribbon img,
+.top-actions img,
+.search-container img,
+.upload-button img,
+.empty-icon img,
+.brand-mark img {
+  filter: none !important;
+  object-fit: contain;
+  display: block;
+}
+
+/* Make the actual SVGs visually stronger */
+.app-rail img {
+  width: 23px;
+  height: 23px;
+  opacity: 0.92;
+}
+
+.folder-item img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.90;
+}
+
+.ribbon img {
+  width: 19px;
+  height: 19px;
+  opacity: 0.92;
+}
+
+.top-actions img,
+.search-container img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.90;
+}
+
+.upload-button img {
+  width: 17px;
+  height: 17px;
+}
+
+.empty-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+/* ============================================================
+   REMOVE TEXT-LOOKING FALLBACK VISUAL
+   ============================================================ */
+
+.asset-fallback {
+  color: #526071;
+  font-size: 0 !important;
+  line-height: 0;
+}
+
+/*
+   If an SVG fails, show a tiny neutral placeholder rather than
+   making the interface look like it is using text icons.
+*/
+.asset-fallback::after {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #94a3b8;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   MAIN GLASS SURFACES
+   ============================================================ */
+
+.ribbon,
+.folder-sidebar,
+.message-list,
+.reading-pane {
+  background: rgba(255, 255, 255, 0.86) !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+
+  backdrop-filter: blur(22px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(125%) !important;
+
+  box-shadow:
+    0 10px 34px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+
+.titlebar {
+  background: rgba(255, 255, 255, 0.90);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.search-container {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.search-container:focus-within {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: var(--accent) !important;
+}
+
+/* ============================================================
+   RAIL
+   ============================================================ */
+
+.app-rail {
+  background: rgba(255, 255, 255, 0.82);
+  border-right: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.rail-button {
+  color: #344054;
+}
+
+.rail-button:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.rail-active {
+  background: rgba(37, 99, 235, 0.12) !important;
+}
+
+.rail-active::before {
+  background: var(--accent);
+}
+
+/* ============================================================
+   FOLDER SIDEBAR
+   ============================================================ */
+
+.folder-item {
+  color: #263244;
+}
+
+.folder-item:hover {
+  background: rgba(15, 23, 42, 0.045);
+}
+
+.folder-selected {
+  background: rgba(37, 99, 235, 0.11) !important;
+  color: #1d4ed8 !important;
+}
+
+.folder-selected img {
+  opacity: 1;
+}
+
+/* ============================================================
+   SCHEDULER CARD
+   ============================================================ */
+
+.scheduler-card {
+  background: rgba(248, 250, 252, 0.86) !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+.scheduler-card-text,
+.scheduler-card-metrics span {
+  color: #718096;
+}
+
+/* ============================================================
+   MESSAGE LIST
+   ============================================================ */
+
+.message-list-header {
+  background: rgba(255, 255, 255, 0.90) !important;
+}
+
+.message-row {
+  border-bottom-color: rgba(15, 23, 42, 0.07);
+}
+
+.message-row:hover {
+  background: rgba(37, 99, 235, 0.045);
+}
+
+.message-selected,
+.message-selected:hover {
+  background: rgba(37, 99, 235, 0.10) !important;
+  border-left-color: var(--accent) !important;
+}
+
+.message-main-line strong {
+  color: #172033;
+}
+
+.message-subject {
+  color: #2563eb;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.empty-icon {
+  background: rgba(248, 250, 252, 0.88) !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+.empty-mail strong {
+  color: #172033;
+}
+
+/* ============================================================
+   COMPOSE WINDOW
+   ============================================================ */
+
+.compose-window {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22) !important;
+}
+
+.compose-titlebar {
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+.compose-message,
+.compose-field > input,
+.recipient-input,
+.schedule-grid input {
+  background: rgba(248, 250, 252, 0.90) !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
+  color: #172033 !important;
+}
+
+.compose-message::placeholder,
+.compose-field > input::placeholder,
+.recipient-input textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ============================================================
+   READING PANE
+   ============================================================ */
+
+.reading-pane {
+  background: rgba(255, 255, 255, 0.90) !important;
+}
+
+.detail-grid div,
+.delivery-card {
+  background: rgba(248, 250, 252, 0.78) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ============================================================
+   KEEP WALLPAPER VISIBLE ONLY AROUND THE APP
+   ============================================================ */
+
+.desktop-wallpaper::after {
+  background: rgba(5, 11, 22, 0.10) !important;
+}
+
+.reachbox-window {
+  background: transparent !important;
+}
+
+
+/* ============================================================
+   REACHBOX — TYPOGRAPHY
+   Modern UI / Outlook-style typography
+   ============================================================ */
+
+:root {
+  --font:
+    "Segoe UI Variable",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  --text: #111827;
+  --text-2: #374151;
+  --text-3: #667085;
+}
+
+/* Global UI text */
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family:
+    "Segoe UI Variable",
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
+
+  letter-spacing: -0.01em;
+}
+
+/* Main headings */
+.message-list-header h1 {
+  color: #111827 !important;
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+.brand-name {
+  color: #111827 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+
+/* Folder/navigation text */
+.folder-item {
+  color: #273244 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.folder-selected {
+  color: #1d4ed8 !important;
+  font-weight: 700 !important;
+}
+
+/* Top search */
+.search-container input {
+  color: #172033 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.search-container input::placeholder {
+  color: #7b8798 !important;
+  font-weight: 400;
+}
+
+/* Buttons */
+.ribbon-primary,
+.ribbon-button,
+.empty-action,
+.send-button,
+.cancel-button {
+  font-family: inherit !important;
+  font-weight: 600 !important;
+}
+
+/* Message rows */
+.message-main-line strong {
+  color: #111827 !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.012em;
+}
+
+.message-subject {
+  color: #1d4ed8 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.message-meta > span:first-child {
+  color: #667085 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.message-main-line time {
+  color: #667085 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Empty state */
+.empty-mail strong {
+  color: #111827 !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+}
+
+.empty-mail > span {
+  color: #667085 !important;
+  font-size: 13px !important;
+  font-weight: 450 !important;
+}
+
+/* Scheduler card */
+.scheduler-card-title {
+  color: #172033 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.scheduler-card-text {
+  color: #667085 !important;
+  font-weight: 450 !important;
+}
+
+.scheduler-card-metrics strong {
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
+/* Reading pane */
+.reading-toolbar {
+  color: #374151 !important;
+  font-weight: 600 !important;
+}
+
+.reading-header h2 {
+  color: #111827 !important;
+  font-size: 23px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+.reading-header p {
+  color: #667085 !important;
+  font-weight: 500 !important;
+}
+
+.detail-grid span {
+  color: #667085 !important;
+  font-weight: 500 !important;
+}
+
+.detail-grid strong {
+  color: #172033 !important;
+  font-weight: 650 !important;
+}
+
+/* Compose */
+.compose-titlebar strong {
+  color: #111827 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+.compose-titlebar span {
+  color: #667085 !important;
+  font-weight: 500 !important;
+}
+
+.compose-field > label,
+.schedule-grid label {
+  color: #374151 !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+
+.compose-message,
+.compose-field > input,
+.recipient-input textarea,
+.schedule-grid input {
+  color: #172033 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.schedule-heading strong {
+  color: #172033 !important;
+  font-weight: 700 !important;
+}
+
+.schedule-heading span {
+  color: #667085 !important;
+}
+
+.schedule-badge {
+  font-weight: 700 !important;
+}
+
+/* Status pills */
+.status-pill {
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+}
+
+/* Online / connection status */
+.connection-status {
+  font-weight: 700 !important;
+}
+
+/* User information */
+.account-row {
+  color: #172033 !important;
+  font-weight: 650 !important;
+}
+
+
+
+/* ============================================================
+   AUTHENTICATION
+   ============================================================ */
+
+.auth-shell {
+  position: relative;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #eef3f9;
+}
+
+.auth-shell .desktop-wallpaper {
+  opacity: 0.72;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 2;
+  width: min(440px, calc(100vw - 32px));
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 32px 90px rgba(15, 23, 42, 0.18),
+    0 8px 28px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.auth-brand .brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.auth-brand .brand-mark img {
+  width: 19px;
+  height: 19px;
+}
+
+.auth-brand > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.auth-brand strong {
+  color: #111827;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.auth-brand span {
+  color: #667085;
+  font-size: 11px;
+}
+
+.auth-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 38px 34px 30px;
+  text-align: center;
+}
+
+.auth-icon {
+  display: flex;
+  width: 58px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 16px;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.auth-icon img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) saturate(100%) invert(31%) sepia(99%) saturate(1190%) hue-rotate(204deg) brightness(91%);
+}
+
+.auth-content h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.auth-content > p {
+  max-width: 330px;
+  margin: 10px 0 22px;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.auth-error {
+  width: 100%;
+  margin-bottom: 14px;
+  border: 1px solid rgba(220, 38, 38, 0.16);
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.06);
+  padding: 10px 12px;
+  color: #b42318;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.google-login-button {
+  display: flex;
+  width: 100%;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  background: white;
+  color: #172033;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+  font-size: 14px;
+  font-weight: 650;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.google-login-button:hover {
+  border-color: rgba(37, 99, 235, 0.32);
+  background: #f8fbff;
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.09);
+  transform: translateY(-1px);
+}
+
+.google-glyph {
+  display: inline-flex;
+  width: 21px;
+  height: 21px;
+  align-items: center;
+  justify-content: center;
+  color: #4285f4;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.auth-security {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 17px;
+  color: #667085;
+  font-size: 11px;
+}
+
+.auth-security .online-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
+  padding: 13px 22px;
+  color: #98a2b3;
+  font-size: 10px;
+}
+
+/* ============================================================
+   AUTHENTICATED PROFILE
+   ============================================================ */
+
+.profile-anchor {
+  position: relative;
+}
+
+.top-avatar {
+  overflow: hidden;
+  padding: 0;
+}
+
+.top-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 80;
+  width: 286px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.20);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.profile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+}
+
+.profile-menu-avatar {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profile-menu-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-menu-identity {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.profile-menu-identity strong {
+  overflow: hidden;
+  color: #172033;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-menu-identity span {
+  overflow: hidden;
+  color: #667085;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-menu-divider {
+  height: 1px;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.profile-menu-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 15px;
+}
+
+.profile-menu-workspace span {
+  color: #98a2b3;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.profile-menu-workspace strong {
+  color: #344054;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.profile-menu-action {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  background: transparent;
+  padding: 11px 15px;
+  color: #344054;
+  font-size: 12px;
+  text-align: left;
+}
+
+.profile-menu-action:hover {
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.profile-menu-action small {
+  color: #98a2b3;
+  font-size: 10px;
+}
+
+.logout-action {
+  justify-content: flex-start;
+  color: #b42318;
+}
+
+.logout-action:hover {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 7px rgba(103, 217, 162, 0.65);
+}
