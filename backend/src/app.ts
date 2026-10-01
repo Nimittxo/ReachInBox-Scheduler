@@ -9,12 +9,12 @@ import { batchRouter } from "./modules/batches/batch.routes.js";
 import { emailRouter } from "./modules/emails/email.routes.js";
 import { bullBoardRouter } from "./infrastructure/queues/bull-board.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
-
+import { slackRouter } from "./modules/slack/slack.route.js";
 export const app = express();
 
 app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
-
+app.use("/api/slack", slackRouter);
 app.get("/", (_req, res) => {
   res.json({
     service: "reachbox-backend",
