@@ -1,4 +1,4 @@
-import crypto from "node:crypto";
+﻿import crypto from "node:crypto";
 import { WebClient } from "@slack/web-api";
 
 import { env } from "../../config/env.js";
@@ -123,68 +123,13 @@ export async function saveSlackConnection(
   });
 }
 
-export async function refreshSlackToken(workspaceId: string) {
+export async function getSlackClient(workspaceId: string) {
   const connection = await prisma.slackConnection.findUnique({
     where: { workspaceId },
   });
 
   if (!connection) {
     throw new Error("Slack is not connected");
-  }
-
-  const response = await fetch("https://slack.com/api/oauth.v2.access", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: env.SLACK_CLIENT_ID,
-      client_secret: env.SLACK_CLIENT_SECRET,
-      grant_type: "refresh_token",
-      refresh_token: connection.refreshToken,
-    }),
-  });
-
-  const data = (await response.json()) as SlackOAuthResponse;
-
-  if (
-    !data.ok ||
-    !data.access_token ||
-    !data.refresh_token ||
-    !data.expires_in
-  ) {
-    throw new Error(data.error ?? "Slack token refresh failed");
-  }
-
-  const updated = await prisma.slackConnection.update({
-    where: { workspaceId },
-    data: {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      accessTokenExpiresAt: new Date(
-        Date.now() + data.expires_in * 1000,
-      ),
-    },
-  });
-
-  return updated;
-}
-
-export async function getSlackClient(workspaceId: string) {
-  let connection = await prisma.slackConnection.findUnique({
-    where: { workspaceId },
-  });
-
-  if (!connection) {
-    throw new Error("Slack is not connected");
-  }
-
-  // Refresh five minutes before expiration.
-  if (
-    connection.accessTokenExpiresAt.getTime() <
-    Date.now() + 5 * 60 * 1000
-  ) {
-    connection = await refreshSlackToken(workspaceId);
   }
 
   return {

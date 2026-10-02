@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+﻿import { Request, Response, Router } from "express";
 import { z } from "zod";
 
 import {
@@ -19,7 +19,14 @@ emailRouter.get(
   requireAuth,
   async (req: Request, res: Response) => {
     try {
-      const workspaceId = req.auth.workspaceId;
+      const auth = req.auth;
+
+      if (!auth) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
+
+      const workspaceId = auth.workspaceId;
 
       const emails = await prisma.scheduledEmail.findMany({
         where: {
@@ -60,7 +67,14 @@ emailRouter.get(
   async (req: Request, res: Response) => {
     try {
       const input = searchSchema.parse(req.query);
-      const workspaceId = req.auth.workspaceId;
+      const auth = req.auth;
+
+      if (!auth) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
+
+      const workspaceId = auth.workspaceId;
 
       const emails = await searchEmails(
         input.q,
@@ -87,3 +101,5 @@ emailRouter.get(
     }
   },
 );
+
+

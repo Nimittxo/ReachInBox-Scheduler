@@ -1,4 +1,4 @@
-import "dotenv/config";
+﻿import "dotenv/config";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -29,6 +29,8 @@ const envSchema = z.object({
     .positive()
     .default(6379),
 
+  REDIS_PASSWORD: z.string().optional(),
+
   ELASTICSEARCH_URL: z.string().url(),
 
   ETHEREAL_HOST: z.string().min(1),
@@ -54,6 +56,13 @@ const envSchema = z.object({
   AUTH_JWT_SECRET: z.string().min(32),
 
   FRONTEND_URL: z.string().url(),
+
+  SLACK_CLIENT_ID: z.string().default(""),
+  SLACK_CLIENT_SECRET: z.string().default(""),
+  SLACK_REDIRECT_URI: z.string().default(""),
 });
 
 export const env = envSchema.parse(process.env);
+
+
+
